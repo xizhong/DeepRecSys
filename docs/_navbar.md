@@ -1,1 +1,1 @@
-* [data](notes/data.md)
+* [data](notes/datasets.md)
