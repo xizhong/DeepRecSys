@@ -3,8 +3,7 @@
 # @Desc  :
 
 import tensorflow as tf
-from tensorflow import keras
-from keras.layers import Layer
+from tensorflow.keras.layers import Layer
 
 
 class FM(Layer):
@@ -12,7 +11,7 @@ class FM(Layer):
     def __init__(self,
                  units,
                  **kwargs):
-        super(Dense, self).__init__(**kwargs)
+        super(FM, self).__init__(**kwargs)
 
     def build(self, input_shape):
         pass
@@ -31,7 +30,7 @@ class FM(Layer):
         return input_shape[:-1].concatenate(self.units)
 
     def get_config(self):
-        config = super(Dense, self).get_config()
+        config = super(FM, self).get_config()
         config.update({
             'units': self.units
         })
