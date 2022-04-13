@@ -5,3 +5,6 @@
 哈哈哈
 """
 print('train hello')
+
+x = f'{1:02d} and {2:02d}'
+print(x)

@@ -1,22 +1,16 @@
-# @Time  : 2022/3/4 12:11
-# @Author: xizhong
-# @Desc  :
-
-import tensorflow as tf
 import pandas as pd
 from sklearn.metrics import log_loss, roc_auc_score
 from sklearn.model_selection import train_test_split
 from sklearn.preprocessing import LabelEncoder, MinMaxScaler
 
-
-from deepctr.models import *
+from deepctr.models import DeepFM
 from deepctr.feature_column import SparseFeat, DenseFeat, get_feature_names
 
 if __name__ == "__main__":
-    data = pd.read_csv('../../datasets/criteo_sample.txt')
+    data = pd.read_csv('../data/criteo_sample.txt')
 
-    sparse_features = ['C' + str(i) for i in range(1, 3)]
-    dense_features = ['I' + str(i) for i in range(1, 4)]
+    sparse_features = ['C' + str(i) for i in range(1, 27)]
+    dense_features = ['I' + str(i) for i in range(1, 14)]
 
     data[sparse_features] = data[sparse_features].fillna('-1', )
     data[dense_features] = data[dense_features].fillna(0, )
@@ -40,7 +34,7 @@ if __name__ == "__main__":
 
     feature_names = get_feature_names(linear_feature_columns + dnn_feature_columns)
 
-    # 3.generate input utils for model
+    # 3.generate input data for models
 
     train, test = train_test_split(data, test_size=0.2, random_state=2020)
     train_model_input = {name: train[name] for name in feature_names}

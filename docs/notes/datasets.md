@@ -19,8 +19,8 @@
 每行数据包含一下特征：
 
 * `Label` 点击是1，否则是0
-* `I1-I13` 13列 number feature，主要是计算特征
-* `C1-C26` 26列 categorical feature，已经三列成32位
+* `I1-I13` 13列 numerical feature，主要是计算特征
+* `C1-C26` 26列 categorical feature，已经散列成32位
 
 ```
 <Label> <I1> ... <I13> <C1> ... <C26>

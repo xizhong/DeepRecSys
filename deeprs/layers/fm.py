@@ -3,15 +3,15 @@
 # @Desc  :
 
 import tensorflow as tf
-from tensorflow.keras.layers import Layer
+from layers import Layer
 
 
-class FM(Layer):
+class FMLayer(Layer):
 
     def __init__(self,
                  units,
                  **kwargs):
-        super(FM, self).__init__(**kwargs)
+        super(FMLayer, self).__init__(**kwargs)
 
     def build(self, input_shape):
         pass
@@ -24,7 +24,7 @@ class FM(Layer):
         input_shape = input_shape.with_rank_at_least(2)
         if tf.compat.dimension_value(input_shape[-1]) is None:
             raise ValueError(
-                'The last dimension of the input shape of a Dense layer '
+                'The last dimension of the input shape of a Dense layers '
                 'should be defined. Found None. '
                 f'Received: input_shape={input_shape}')
         return input_shape[:-1].concatenate(self.units)
