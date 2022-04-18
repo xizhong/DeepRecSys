@@ -1,6 +1,7 @@
 # @Time  : 2022/3/25 12:02
 # @Author: xizhong
 # @Desc  :
+import glob
 
 from tqdm import tqdm
 import tensorflow as tf
@@ -19,12 +20,12 @@ def write_tfrecord(filename_pre, df, feature_cols, label_col, tfrecord_size=None
     :return:
     """
     def _make_example(line, feature_cols, label_col):
-        features = {feat['name']: tf.train.Feature(int64_list=tf.train.Int64List(
-            value=[line[feat['name']]])) for feat in feature_cols[0]}
-        features.update({feat['name']: tf.train.Feature(float_list=tf.train.FloatList(
-                value=[line[feat['name']]])) for feat in feature_cols[1]})
-        features.update({feat['name']: tf.train.Feature(int64_list=tf.train.Int64List(
-                value=[line[feat['name']]])) for feat in feature_cols[3]})
+        features = {feat.name: tf.train.Feature(int64_list=tf.train.Int64List(
+            value=[line[feat.name]])) for feat in feature_cols[0]}
+        features.update({feat.name: tf.train.Feature(float_list=tf.train.FloatList(
+                value=[line[feat.name]])) for feat in feature_cols[1]})
+        features.update({feat.name: tf.train.Feature(int64_list=tf.train.Int64List(
+                value=[line[feat.name]])) for feat in feature_cols[2]})
         features[label_col['name']] = tf.train.Feature(
             float_list=tf.train.FloatList(value=[line[label_col['name']]]))
         return tf.train.Example(features=tf.train.Features(feature=features))
@@ -54,11 +55,11 @@ def read_tfrecord(filenames, feature_cols, label_col, batch_size=256, num_epochs
     :param prefetch_factor:
     :return:
     """
-    feature_description = {feat['name']: tf.io.FixedLenFeature([1], dtype=tf.int32) for feat in feature_cols[0]}
+    feature_description = {feat.name: tf.io.FixedLenFeature([1], dtype=tf.int64) for feat in feature_cols[0]}
     feature_description.update(
-        {feat['name']: tf.io.FixedLenFeature([1], dtype=tf.float32) for feat in feature_cols[1]})
+        {feat.name: tf.io.FixedLenFeature([1], dtype=tf.float32) for feat in feature_cols[1]})
     feature_description.update(
-        {feat['name']: tf.io.FixedLenFeature([feat.max_len], dtype=tf.int32) for feat in feature_cols[2]})
+        {feat.name: tf.io.FixedLenFeature([feat.max_len], dtype=tf.int64) for feat in feature_cols[2]})
     feature_description[label_col['name']] = tf.io.FixedLenFeature([1], dtype=tf.float32)
 
     def _parse_examples(serial_exmp):
@@ -74,7 +75,8 @@ def read_tfrecord(filenames, feature_cols, label_col, batch_size=256, num_epochs
         return features
 
     def _gen_dataset_iterator():
-        dataset = tf.data.TFRecordDataset(filenames, compression_type='GZIP')
+        filename_list = glob.glob(filenames)
+        dataset = tf.data.TFRecordDataset(filename_list, compression_type='GZIP')
         dataset = dataset.map(
             _parse_examples,
             num_parallel_calls=num_parallel_calls)

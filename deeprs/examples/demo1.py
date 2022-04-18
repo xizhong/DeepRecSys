@@ -34,7 +34,7 @@ if __name__ == "__main__":
 
     feature_names = get_feature_names(linear_feature_columns + dnn_feature_columns)
 
-    # 3.generate input data for models
+    # 3.generate input tfr_data for models
 
     train, test = train_test_split(data, test_size=0.2, random_state=2020)
     train_model_input = {name: train[name] for name in feature_names}

@@ -17,7 +17,7 @@ if gpus:
         # Visible devices must be set before GPUs have been initialized
         print(e)
 
-train_path = tf.keras.utils.get_file("criteo_sample.txt", '/data/home/zhongxi/PyWorkSpace/DeepRecSys/deeprs/data/criteo_sample.txt')
+train_path = tf.keras.utils.get_file("criteo_sample.txt", '/tfr_data/home/zhongxi/PyWorkSpace/DeepRecSys/deeprs/tfr_data/criteo_sample.txt')
 
 features = ['C' + str(i) for i in range(1, 27)] + ['I' + str(i) for i in range(1, 14)]
 target = ['label']
@@ -37,7 +37,7 @@ def get_dataset(file_path):
 # train_y = tf.matmul(train_x, weight) + 3
 #
 # tensors = train_x, train_y
-# datasets = tf.data.Dataset.from_tensor_slices(tensors).shuffle(1000).batch(128)
+# datasets = tf.tfr_data.Dataset.from_tensor_slices(tensors).shuffle(1000).batch(128)
 #
 # inputs = Input(shape=(10,), dtype=tf.float32)
 #

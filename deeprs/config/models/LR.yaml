@@ -9,15 +9,15 @@ debug: False
 # model config
 model: LR
 loss: binary_crossentropy
-metrics: [logloss, AUC]
+metrics: [accuracy, AUC]
 task: binary_classification
 optimizer: adam
 learning_rate: 1.0e-3
 regularizer: 0
 batch_size: 1000
-epoches: 10
+epochs: 10
 shuffle: True
-embed_dim: 16
-seed: 20200808
+embed_dim: 1
+seed: 20190601
 monitor: {AUC: 1, logloss: -1}
 monitor_mode: max

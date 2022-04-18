@@ -8,7 +8,7 @@ from sklearn.model_selection import train_test_split
 import time
 
 start = time.time()
-dataset_url = "/Users/zhongxi/Workspace/PycharmProject/DeepRecSys/deeprs/data/Criteo_x4/train.csv"
+dataset_url = "/Users/zhongxi/Workspace/PycharmProject/DeepRecSys/deeprs/tfr_data/Criteo_x4/train.csv"
 df = pd.read_csv(dataset_url)
 print(f'Time cost {time.time() - start:.2f}')
 sparse_feature = ['C' + str(_) for _ in range(1, 27)]

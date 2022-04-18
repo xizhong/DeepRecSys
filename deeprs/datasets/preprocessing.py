@@ -2,6 +2,7 @@
 # @Author: xizhong
 # @Desc  :
 import numpy as np
+import logging
 
 
 class Preprocessing(object):
@@ -18,12 +19,12 @@ class Preprocessing(object):
         return df[col_name].map(_convert_to_bucket).astype(int)
 
     def fill_na(self, df, col_name, na_value):
-        return df[col_name].fill_na(na_value)
+        return df[col_name].fillna(na_value)
 
     def replace_min_count(self, df, col_name, min_count, replace_str):
         counter = df[col_name].value_counts(ascending=True)
         less_min_count_list = []
-        for key, count in counter:
+        for key, count in counter.iteritems():
             if count < min_count:
                 less_min_count_list.append(key)
             else:

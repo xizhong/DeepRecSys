@@ -18,10 +18,10 @@ if gpus:
         # Visible devices must be set before GPUs have been initialized
         print(e)
 
-# data info
-train_data_url = "/data/home/zhongxi/PyWorkSpace/Datasets/Criteo_x4/train.csv"
-test_data_url = "/data/home/zhongxi/PyWorkSpace/Datasets/Criteo_x4/test.csv"
-valid_data_url = "/data/home/zhongxi/PyWorkSpace/Datasets/Criteo_x4/valid.csv"
+# tfr_data info
+train_data_url = "../tfr_data/criteo_mini/raw_data/train.tiny.csv"
+test_data_url = "../tfr_data/criteo_mini/raw_data/test.tiny.csv"
+valid_data_url = "../tfr_data/criteo_mini/raw_data/valid.tiny.csv"
 
 sparse_feature = ['C' + str(_) for _ in range(1, 27)]
 dense_feature = ['I' + str(_) for _ in range(1, 14)]

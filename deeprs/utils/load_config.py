@@ -2,21 +2,24 @@
 # @Author: xizhong
 # @Desc  :
 
-import os
 import yaml
 import tensorflow as tf
 import json
+import os
 
 
 def load_config(*config_pth):
     params = dict()
-    if not config_pth or len(config_pth) != 2:
+    if not config_pth or len(config_pth) < 1:
         raise ValueError(
-            "Make sure config_pth = [model_file_pth, data_file_pth]")
+            "Make sure config_pth in [model_file_pth, data_file_pth]")
     for pth in config_pth:
         assert os.path.isfile(pth) == 1, f'Invalid config file {pth}'
         with open(pth, 'r', encoding='utf-8') as f:
             params.update(yaml.load(f, Loader=yaml.FullLoader))
+    if len(config_pth) > 1:
+        for dd in ['train_data', 'valid_data', 'test_data']:
+            params[dd] = os.path.join(params['data_root'], params['raw_data'], params[dd])
     return params
 
 

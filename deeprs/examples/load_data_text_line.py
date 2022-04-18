@@ -5,7 +5,7 @@
 
 import tensorflow as tf
 
-# tf.data.TextLineDataset -> Dataset
+# tf.tfr_data.TextLineDataset -> Dataset
 file_names = ['dataset_text_line.py']
 batch_size = 128
 
