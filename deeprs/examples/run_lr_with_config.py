@@ -8,7 +8,7 @@ import os
 # sys.path.append(os.path.dirname(sys.path[0]))
 
 import tensorflow as tf
-from utils import load_config, set_gpu, set_logger
+from utils import load_config, set_gpu, set_logger, load_callbacks
 from datasets import build_tfrecord_dataset, generate_tfrecord_iter
 from models import LR
 
@@ -40,13 +40,10 @@ valid_iter, test_iter = generate_tfrecord_iter([
 
 model = LR(feature_cols, params)
 
-callbacks_mck = tf.keras.callbacks.ModelCheckpoint(**params['checkpoint'])
-callbacks_tb = tf.keras.callbacks.TensorBoard(**params['tensorboard'])
-callbacks_es = tf.keras.callbacks.EarlyStopping(**params['early_stopping'])
+callbacks = load_callbacks(**params['checkpoint'], **params['tensorboard'], **params['early_stopping'])
 
 model.fit(train_iter, epochs=params['epochs'],
-          verbose=params['verbose'], callbacks=[callbacks_mck, callbacks_tb, callbacks_es],
-          validation_data=valid_iter)
+          verbose=params['verbose'], callbacks=callbacks, validation_data=valid_iter)
 del model
 new_model = tf.keras.models.load_model(params['checkpoint']['filepath'])
 new_model.evaluate(test_iter, verbose=params['verbose'])

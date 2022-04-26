@@ -1,7 +1,6 @@
 # default config
 workers: 3 # not use
 verbose: 1
-debug: False
 shuffle_factor: 1000
 early_stopping: {monitor: val_auc, mode: 'max', patience: 10, verbose: 1,
                  min_delta: 0.001, baseline: 0.0, restore_best_weights: False}
@@ -19,7 +18,7 @@ task: binary_classification
 optimizer: adam
 learning_rate: 1.0e-3
 regularizer: 0
-batch_size: 1000
+batch_size: 100000
 epochs: 100
 embed_dim: 1
 seed: 20190601

@@ -6,3 +6,4 @@
 from utils.decorator_fn import *
 from utils.load_config import *
 from utils.logger_fn import *
+from utils.load_config import *
