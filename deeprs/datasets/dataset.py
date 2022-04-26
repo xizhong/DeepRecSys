@@ -1,7 +1,6 @@
 # @Time  : 2022/4/9 19:21
 # @Author: xizhong
 # @Desc  :
-import logging
 import os
 import pandas as pd
 from datasets import Preprocessing
@@ -30,24 +29,24 @@ def generate_feature_configs(feature_config_dict):
 
 
 def processing_df(df, feature_configs,
-                  is_train_data=True, encoders=None):
+                  is_train_data=True, encoders=None, logger=None):
     preprocessing = Preprocessing()
     if not encoders:
         encoders = dict()
     for idx, feature_config in enumerate(feature_configs):
-        logging.info(f'Preprocess feature: {feature_config.name}')
+        logger.info(f'Preprocess feature: {feature_config.name}')
         name = feature_config.name
         if is_train_data and feature_config.min_count is not None:
-            logging.info(f'Preprocess feature: {feature_config.name} replace min count ...')
+            logger.debug(f'Preprocess feature: {feature_config.name} replace min count ...')
             df[name] = preprocessing.replace_min_count(df, name, feature_config.min_count, feature_config.na_value)
         if feature_config.na_value is not None:
-            logging.info(f'Preprocess feature: {feature_config.name} fill na ...')
+            logger.debug(f'Preprocess feature: {feature_config.name} fill na ...')
             df[name] = preprocessing.fill_na(df, name, feature_config.na_value)
         if feature_config.preprocess is not None:
-            logging.info(f'Preprocess feature: {feature_config.name} {feature_config.preprocess} ...')
+            logger.debug(f'Preprocess feature: {feature_config.name} {feature_config.preprocess} ...')
             pp_fn = getattr(preprocessing, feature_config.preprocess)
             df[name] = pp_fn(df, name)
-        logging.info(f'Preprocess feature: {feature_config.name} encode {feature_config.type} ...')
+        logger.debug(f'Preprocess feature: {feature_config.name} encode {feature_config.type} ...')
         if feature_config.type == 'categorical':
             if feature_config.dtype not in ['str', 'string']:
                 df[name] = df[name].astype('int32', errors='ignore').astype(str)
@@ -65,39 +64,39 @@ def processing_df(df, feature_configs,
             df[name] = encoders[share_name].transform(df[name])
         else:
             raise NotImplementedError(f'Type: {feature_config.type} is not implemented')
-        logging.info(f'Preprocess feature: {feature_config.name} done')
+        logger.info(f'Preprocess feature: {feature_config.name} done')
     return df, encoders
 
 
 def build_tfrecord_dataset(feature_cols_dict, label_col_dict, data_root, tfr_data,
-                           train_data, valid_data=None, test_data=None):
-    logging.info("Start build TFRecord dataset...")
+                           train_data, output_feature, tfr_data_size, valid_data=None, test_data=None, logger=None):
+    logger.info("Start build TFRecord dataset...")
     feature_configs = generate_feature_configs(feature_config_dict=feature_cols_dict)
     train_df = pd.read_csv(train_data)
-    logging.info("Build train tfr_data TFRecord dataset: preprocess...")
+    logger.info("Build train tfr_data TFRecord dataset: preprocess...")
     train_df, encoders = processing_df(train_df, feature_configs)
     feature_cols, label_col = generate_feature_cols(feature_configs, label_col_dict)
     train_trf_pth, valid_trf_pth, test_trf_pth = get_tfrecord_path(data_root, tfr_data, train_data, valid_data, test_data)
-    logging.info("Build train tfr_data TFRecord dataset: save...")
-    save_train_features(feature_cols, label_col, os.path.join(data_root, tfr_data), encoders,
+    logger.info("Build train tfr_data TFRecord dataset: save...")
+    save_train_features(feature_cols, label_col, os.path.join(data_root, output_feature), encoders,
                         train_trf_pth, valid_trf_pth, test_trf_pth)
-    logging.info("Build train tfr_data TFRecord dataset: writing...")
-    write_tfrecord(train_trf_pth, train_df, feature_cols, label_col)
-    logging.info("Build train tfr_data TFRecord dataset: done")
+    logger.info("Build train tfr_data TFRecord dataset: writing...")
+    write_tfrecord(train_trf_pth, train_df, feature_cols, label_col, tfr_data_size)
+    logger.info("Build train tfr_data TFRecord dataset: done")
     if valid_data:
         valid_df = pd.read_csv(valid_data)
-        logging.info("Build valid tfr_data TFRecord dataset: preprocess...")
+        logger.info("Build valid tfr_data TFRecord dataset: preprocess...")
         valid_df, _ = processing_df(valid_df, feature_configs, is_train_data=False, encoders=encoders)
-        logging.info("Build valid tfr_data TFRecord dataset: writing")
-        write_tfrecord(valid_trf_pth, valid_df, feature_cols, label_col)
-        logging.info("Build valid tfr_data TFRecord dataset: done")
+        logger.info("Build valid tfr_data TFRecord dataset: writing")
+        write_tfrecord(valid_trf_pth, valid_df, feature_cols, label_col, tfr_data_size)
+        logger.info("Build valid tfr_data TFRecord dataset: done")
     if test_data:
         test_df = pd.read_csv(test_data)
-        logging.info("Build test tfr_data TFRecord dataset: preprocess...")
+        logger.info("Build test tfr_data TFRecord dataset: preprocess...")
         test_df, _ = processing_df(test_df, feature_configs, is_train_data=False, encoders=encoders)
-        logging.info("Build test tfr_data TFRecord dataset: writing")
-        write_tfrecord(test_trf_pth, test_df, feature_cols, label_col)
-        logging.info("Build test tfr_data TFRecord dataset: done")
+        logger.info("Build test tfr_data TFRecord dataset: writing")
+        write_tfrecord(test_trf_pth, test_df, feature_cols, label_col, tfr_data_size)
+        logger.info("Build test tfr_data TFRecord dataset: done")
     return feature_cols, label_col
 
 

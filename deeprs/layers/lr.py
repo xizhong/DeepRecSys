@@ -24,6 +24,7 @@ class LRLayer(Layer):
             initializer='zero',
             trainable=True
         )
+        super(LRLayer, self).build(input_shape)
 
     def call(self, inputs):
         output = tf.matmul(inputs, self.weight) + self.bias
@@ -36,4 +37,4 @@ class LRLayer(Layer):
 
     def get_config(self):
         config = super(LRLayer, self).get_config()
-        return config
+        return config.update({'activation': self.activation})

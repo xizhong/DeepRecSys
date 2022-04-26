@@ -6,5 +6,4 @@ import tensorflow as tf
 
 
 class Layer(tf.keras.layers.Layer):
-    def test(self):
-        pass
+    pass

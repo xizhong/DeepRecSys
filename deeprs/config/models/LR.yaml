@@ -1,10 +1,15 @@
 # default config
-model_root: ../checkpoints/
-workers: 3
+workers: 3 # not use
 verbose: 1
-patience: 2
-save_best_only: True
 debug: False
+shuffle_factor: 1000
+early_stopping: {monitor: val_auc, mode: 'max', patience: 10, verbose: 1,
+                 min_delta: 0.001, baseline: 0.0, restore_best_weights: False}
+checkpoint: {filepath: ../data/criteo_all/checkpoint, monitor: val_auc, verbose: 1, save_best_only: True,
+             save_weights_only: False, mode: 'max', save_freq: epoch}
+tensorboard: {log_dir: '../data/criteo_all/logs', histogram_freq: 0, batch_size: 32, write_graph: True,
+               write_grads: False, write_images: False, embeddings_freq: 0, embeddings_layer_names: None,
+               embeddings_metadata: None, embeddings_data: None, update_freq: 'epoch'}
 
 # model config
 model: LR
@@ -15,9 +20,7 @@ optimizer: adam
 learning_rate: 1.0e-3
 regularizer: 0
 batch_size: 1000
-epochs: 10
-shuffle: True
+epochs: 100
 embed_dim: 1
 seed: 20190601
-monitor: {AUC: 1, logloss: -1}
-monitor_mode: max
+monitor: val_auc

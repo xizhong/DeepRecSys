@@ -2,6 +2,7 @@
 # @Author: xizhong
 # @Desc  :
 import glob
+import gc
 
 from tqdm import tqdm
 import tensorflow as tf
@@ -41,6 +42,8 @@ def write_tfrecord(filename_pre, df, feature_cols, label_col, tfrecord_size=None
                 writer.close()
             writer = tf.io.TFRecordWriter(f'{filename_pre}.{idx // tfrecord_size + 1:02d}', options=writer_option)
         writer.write(ex.SerializeToString())
+    del df
+    gc.collect()
 
 
 def read_tfrecord(filenames, feature_cols, label_col, batch_size=256, num_epochs=1,
@@ -74,22 +77,21 @@ def read_tfrecord(filenames, feature_cols, label_col, batch_size=256, num_epochs
             return features, labels
         return features
 
-    def _gen_dataset_iterator():
-        filename_list = glob.glob(filenames)
-        dataset = tf.data.TFRecordDataset(filename_list, compression_type='GZIP')
-        dataset = dataset.map(
-            _parse_examples,
-            num_parallel_calls=num_parallel_calls)
-        if shuffle_factor > 0:
-            dataset = dataset.shuffle(buffer_size=batch_size * shuffle_factor)
-        dataset = dataset.repeat(num_epochs).batch(batch_size)
-        if prefetch_factor > 0:
-            dataset = dataset.prefetch(
-                buffer_size=batch_size * prefetch_factor)
-        try:
-            iterator = dataset.make_one_shot_iterator()
-        except AttributeError:
-            iterator = tf.compat.v1.data.make_one_shot_iterator(dataset)
-        return iterator.get_next()
+    filename_list = glob.glob(filenames)
+    dataset = tf.data.TFRecordDataset(filename_list, compression_type='GZIP')
+    dataset = dataset.map(
+        _parse_examples,
+        num_parallel_calls=num_parallel_calls)
+    if shuffle_factor > 0:
+        dataset = dataset.shuffle(buffer_size=batch_size * shuffle_factor)
+    dataset = dataset.repeat(num_epochs).batch(batch_size)
+    if prefetch_factor > 0:
+        dataset = dataset.prefetch(
+            buffer_size=batch_size * prefetch_factor)
+    # try:
+    #     iterator = dataset.make_one_shot_iterator()
+    # except AttributeError:
+    #     iterator = tf.compat.v1.data.make_one_shot_iterator(dataset)
+    # return iterator.get_next()
+    return dataset
 
-    return _gen_dataset_iterator()

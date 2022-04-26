@@ -11,10 +11,23 @@ from datasets import CategoricalCol, NumericCol, SequentialCol
 class EmbeddingLayer(Layer):
     def __init__(self, feature_cols, embed_dim, **kwargs):
         super(EmbeddingLayer, self).__init__(**kwargs)
+        self.feature_cols = feature_cols
+        self.embed_dim = embed_dim
         self.embedding_layer = EmbeddingDictLayer(feature_cols, embed_dim)
+
+    def build(self, input_shape):
+        super(EmbeddingLayer, self).build(input_shape)
 
     def call(self, inputs):
         return self.embedding_layer.call(inputs)
+
+    def get_config(self):
+        config = {'feature_cols': self.feature_cols, 'embed_dim': self.embed_dim}
+        return config
+
+    @classmethod
+    def from_config(cls, config):
+        return cls(**config)
 
 
 class EmbeddingDictLayer(Layer):
@@ -23,6 +36,9 @@ class EmbeddingDictLayer(Layer):
         self.feature_cols = feature_cols
         self.embed_dim = embed_dim
         self.embedding_dict = self._generate_embedding_dict()
+
+    def build(self, input_shape):
+        super(EmbeddingDictLayer, self).build(input_shape)
 
     def call(self, inputs):
         embed_dict = collections.OrderedDict()
@@ -44,5 +60,13 @@ class EmbeddingDictLayer(Layer):
                     raise NotImplementedError("Type must be in [Categorical, Numeric, Sequential]")
                 embedding_dict[feat.name] = embedding
         return embedding_dict
+
+    def get_config(self):
+        config = {'feature_cols': self.feature_cols, 'embed_dim': self.embed_dim}
+        return config
+
+    @classmethod
+    def from_config(cls, config):
+        return cls(**config)
 
 

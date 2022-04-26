@@ -2,12 +2,9 @@
 # @Author: xizhong
 # @Desc  :
 import numpy as np
-import logging
 
 
 class Preprocessing(object):
-    def __init__(self):
-        pass
 
     def convert_to_bucket(self, df, col_name):
         def _convert_to_bucket(value):
