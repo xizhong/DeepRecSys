@@ -4,9 +4,9 @@ verbose: 1
 shuffle_factor: 1000
 early_stopping: {monitor: val_auc, mode: 'max', patience: 10, verbose: 1,
                  min_delta: 0.001, baseline: 0.0, restore_best_weights: False}
-checkpoint: {filepath: ../data/criteo_all/checkpoint, monitor: val_auc, verbose: 1, save_best_only: True,
+checkpoint: {filepath: ../data/criteo_mp/checkpoint, monitor: val_auc, verbose: 1, save_best_only: True,
              save_weights_only: False, mode: 'max', save_freq: epoch}
-tensorboard: {log_dir: '../data/criteo_all/logs', histogram_freq: 0, batch_size: 32, write_graph: True,
+tensorboard: {log_dir: '../data/criteo_mp/logs', histogram_freq: 0, batch_size: 32, write_graph: True,
                write_grads: False, write_images: False, embeddings_freq: 0, embeddings_layer_names: None,
                embeddings_metadata: None, embeddings_data: None, update_freq: 'epoch'}
 

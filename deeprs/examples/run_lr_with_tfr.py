@@ -26,15 +26,15 @@ logger = set_logger(logging.INFO, log_file=f'../logs/{exp_name}.log')
 model_params = load_config('../config/models/LR.yaml')
 
 data_params, _ = load_train_features(
-    '../data/criteo_all/feature_data/')
+    '../data/criteo_mp/feature_data/')
 
 train_iter = generate_tfrecord_iter(
-    data_params['train_trf_pth'],
+    data_params['train_tfr_pth'],
     data_params['feature_cols'],
     data_params['label_col'],
     model_params['batch_size'])
 valid_iter, test_iter = generate_tfrecord_iter([
-    data_params['valid_trf_pth'], data_params['test_trf_pth']],
+    data_params['valid_tfr_pth'], data_params['test_tfr_pth']],
     data_params['feature_cols'], data_params['label_col'],
     model_params['batch_size'], is_train_data=False)
 

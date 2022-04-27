@@ -52,7 +52,7 @@ def generate_feature_cols(feature_configs: list[FeatureConfig], label_col, file_
     return [categorical_cols, numeric_cols, sequential_cols], label_col
 
 
-def save_train_features(feature_cols, label_col, file_pth, encoders=None, train_trf_pth=None, valid_trf_pth=None, test_trf_pth=None):
+def save_train_features(feature_cols, label_col, file_pth, encoders=None, train_tfr_pth=None, valid_tfr_pth=None, test_tfr_pth=None):
     if encoders is not None:
         encoder_dict = collections.OrderedDict()
         for name, encoder in encoders.items():
@@ -62,9 +62,9 @@ def save_train_features(feature_cols, label_col, file_pth, encoders=None, train_
     params = {
         'feature_cols': feature_cols,
         'label_col': label_col,
-        'train_trf_pth': train_trf_pth + '.*',
-        'valid_trf_pth': valid_trf_pth + '.*',
-        'test_trf_pth': test_trf_pth + '.*'
+        'train_tfr_pth': train_tfr_pth + '.*',
+        'valid_tfr_pth': valid_tfr_pth + '.*',
+        'test_tfr_pth': test_tfr_pth + '.*'
     }
     with open(os.path.join(file_pth, 'train_features.cfg'), 'wb') as f:
         pickle.dump(params, f)

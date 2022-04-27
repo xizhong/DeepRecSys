@@ -1,9 +1,10 @@
 data: criteo_x4
-data_root: ../data/criteo_all
+data_root: ../data/criteo_mp
 raw_data: raw_data
 tfr_data: tfr_data
 output_feature: feature_data
 tfr_data_size: 1000000
+tfr_processes: 10
 data_format: csv
 train_data: train.csv
 test_data: test.csv

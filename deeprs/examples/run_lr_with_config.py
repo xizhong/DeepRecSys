@@ -18,7 +18,7 @@ from models import LR
 set_gpu([1])
 
 model = 'lr'
-data = 'criteo_x4_8'
+data = 'criteo_x4_mp'
 exp_name = f'{model}_{data}'
 logger = set_logger(logging.INFO, f'../logs/{exp_name}.log')
 
@@ -26,8 +26,8 @@ params = load_config('../config/datasets/Criteo.yaml', '../config/models/LR.yaml
 
 feature_cols, label_col = build_tfrecord_dataset(
     params['feature_cols'], params['label_col'], params['data_root'], params['tfr_data'],
-    params['train_data'], params['output_feature'], params['tfr_data_size'], params['valid_data'], params['test_data'],
-    logger)
+    params['train_data'], params['output_feature'], params['tfr_data_size'], params['tfr_processes'],
+    params['valid_data'], params['test_data'], logger)
 
 train_iter = generate_tfrecord_iter(
     os.path.join(params['data_root'], params['tfr_data'],
@@ -42,7 +42,7 @@ valid_iter, test_iter = generate_tfrecord_iter([
 
 model = LR(feature_cols, params)
 
-callbacks = load_callbacks_fn(model_params['checkpoint'], model_params['tensorboard'], model_params['early_stopping'])
+callbacks = load_callbacks_fn(params['checkpoint'], params['tensorboard'], params['early_stopping'])
 
 model.fit(train_iter, epochs=params['epochs'],
           verbose=params['verbose'], callbacks=callbacks, validation_data=valid_iter)

@@ -9,6 +9,7 @@ from datasets import Encoder, FeatureConfig
 from datasets import write_tfrecord, read_tfrecord
 from datasets import generate_feature_cols, save_train_features
 from config import load_data_dict
+import multiprocessing
 
 
 def generate_feature_configs(feature_config_dict):
@@ -60,7 +61,7 @@ def processing_df(df, feature_configs, encoders=None, min_count_dict=None, logge
 
 
 def build_tfrecord_dataset(feature_cols_dict, label_col_dict, data_root, tfr_data,
-                           train_data, output_feature, tfr_data_size, valid_data=None, test_data=None, logger=None):
+                           train_data, output_feature, tfr_data_size, processes, valid_data=None, test_data=None, logger=None):
     logger.info("Start build TFRecord dataset...")
     feature_configs = generate_feature_configs(feature_config_dict=feature_cols_dict)
     logger.info("Loading data dict config...")
@@ -68,19 +69,19 @@ def build_tfrecord_dataset(feature_cols_dict, label_col_dict, data_root, tfr_dat
     logger.info("Generating categorical feature encoders...")
     encoders, feature_configs = get_encoder(uniq_vocab_dict, feature_configs)
     feature_cols, label_col = generate_feature_cols(feature_configs, label_col_dict)
-    train_trf_pth, valid_trf_pth, test_trf_pth = get_tfrecord_path(data_root, tfr_data, train_data, valid_data,
+    train_tfr_pth, valid_tfr_pth, test_tfr_pth = get_tfrecord_path(data_root, tfr_data, train_data, valid_data,
                                                                    test_data)
     logger.info("Saving features to file...")
     save_train_features(feature_cols, label_col, os.path.join(data_root, output_feature), encoders,
-                        train_trf_pth, valid_trf_pth, test_trf_pth)
-    writer_tfread_from_read_csv(train_data, 'train', feature_configs, train_trf_pth, feature_cols, label_col,
-                                tfr_data_size, encoders, min_count_dict, logger)
+                        train_tfr_pth, valid_tfr_pth, test_tfr_pth)
+    writer_tfread_from_read_csv(train_data, 'train', feature_configs, train_tfr_pth, feature_cols, label_col,
+                                tfr_data_size, encoders, min_count_dict, processes, logger)
     if valid_data:
-        writer_tfread_from_read_csv(valid_data, 'valid', feature_configs, valid_trf_pth, feature_cols, label_col,
-                                    tfr_data_size, encoders, min_count_dict, logger)
+        writer_tfread_from_read_csv(valid_data, 'valid', feature_configs, valid_tfr_pth, feature_cols, label_col,
+                                    tfr_data_size, encoders, min_count_dict, processes, logger)
     if test_data:
-        writer_tfread_from_read_csv(test_data, 'test', feature_configs, test_trf_pth, feature_cols, label_col,
-                                    tfr_data_size, encoders, min_count_dict, logger)
+        writer_tfread_from_read_csv(test_data, 'test', feature_configs, test_tfr_pth, feature_cols, label_col,
+                                    tfr_data_size, encoders, min_count_dict, processes, logger)
     logger.info("End build TFRecord dataset.")
     return feature_cols, label_col
 
@@ -109,16 +110,25 @@ def get_tfrecord_path(data_root, tfr_data, train_data, valid_data, test_data):
     return ret
 
 
-def writer_tfread_from_read_csv(data, data_type, feature_configs, trf_pth, feature_cols, label_col, chunksize,
-                                encoders, min_count_dict, logger):
+def writer_tfread_from_read_csv(data, data_type, feature_configs, tfr_pth, feature_cols, label_col, chunksize,
+                                encoders, min_count_dict, processes, logger):
+    pool = multiprocessing.Pool(processes=processes)
     logger.info(f'Build {data_type} tfr_data TFRecord dataset: preprocess...')
     idx = 1
     for df in pd.read_csv(data, chunksize=chunksize, iterator=True):
         logger.info(f'Build {data_type} {idx:02d} tfr_data TFRecord dataset: processing...')
         df = processing_df(df, feature_configs, encoders, min_count_dict, logger)
-        write_tfrecord(f'{trf_pth}.{idx:02d}', df, feature_cols, label_col)
+        pool.apply_async(single_process_func, (idx, data_type, df, feature_cols, label_col, tfr_pth, logger))
         idx += 1
+    pool.close()
+    pool.join()
     logger.info(f'Build {data_type} tfr_data TFRecord dataset: done')
+
+
+def single_process_func(idx, data_type, df, feature_cols, label_col,
+                        tfr_pth, logger):
+    write_tfrecord(f'{tfr_pth}.{idx:02d}', df, feature_cols, label_col)
+    logger.info(f'Build {data_type} {idx:02d} tfr_data TFRecord dataset: done')
 
 
 def get_encoder(uniq_vocab_dict, feature_configs):
