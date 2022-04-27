@@ -2,12 +2,14 @@
 # @Author: xizhong
 # @Desc  :
 
-# import os
-# import sys
-# sys.path.append(os.path.dirname(sys.path[0]))
+import os
+os.environ['TF_CPP_MIN_LOG_LEVEL'] = '2'
+
+import sys
+sys.path.append(os.path.dirname(sys.path[0]))
 
 import tensorflow as tf
-from utils import load_config, set_gpu, set_logger, load_callbacks
+from utils import load_config, set_gpu, set_logger, load_callbacks_fn
 from datasets import load_train_features, generate_tfrecord_iter
 from models import LR
 import logging
@@ -38,7 +40,7 @@ valid_iter, test_iter = generate_tfrecord_iter([
 
 model = LR(data_params['feature_cols'], model_params)
 
-callbacks = load_callbacks(**model_params['checkpoint'], **model_params['tensorboard'], **model_params['early_stopping'])
+callbacks = load_callbacks_fn(model_params['checkpoint'], model_params['tensorboard'], model_params['early_stopping'])
 
 model.fit(train_iter, epochs=model_params['epochs'],
           verbose=model_params['verbose'], callbacks=callbacks, validation_data=valid_iter)

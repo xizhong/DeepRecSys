@@ -5,15 +5,15 @@
 import tensorflow as tf
 
 
-def load_callbacks(checkpoint=None, tensorboard=None, early_stopping=None):
+def load_callbacks_fn(checkpoint=None, tensorboard=None, early_stopping=None):
     callbacks = list()
     if checkpoint is not None:
         callbacks.append(
-            tf.keras.callbacks.ModelCheckpoint(checkpoint))
+            tf.keras.callbacks.ModelCheckpoint(**checkpoint))
     if tensorboard is not None:
-        callbacks.append(tf.keras.callbacks.TensorBoard(tensorboard))
+        callbacks.append(tf.keras.callbacks.TensorBoard(**tensorboard))
     if early_stopping is not None:
-        callbacks.append(tf.keras.callbacks.EarlyStopping(early_stopping))
+        callbacks.append(tf.keras.callbacks.EarlyStopping(**early_stopping))
     return callbacks if len(callbacks) > 0 else None
 
 

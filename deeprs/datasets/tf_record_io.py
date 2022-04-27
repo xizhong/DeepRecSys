@@ -10,14 +10,13 @@ from utils import execution_time
 
 
 @execution_time
-def write_tfrecord(filename_pre, df, feature_cols, label_col, tfrecord_size=None):
+def write_tfrecord(output_file_name, df, feature_cols, label_col):
     """
     write csv to tfrecord
-    :param filename_pre: multi file pre name
+    :param output_file_name:
     :param df: dataframe
     :param feature_cols:
     :param label_col:
-    :param tfrecord_size: 1000 000
     :return:
     """
     def _make_example(line, feature_cols, label_col):
@@ -32,16 +31,11 @@ def write_tfrecord(filename_pre, df, feature_cols, label_col, tfrecord_size=None
         return tf.train.Example(features=tf.train.Features(feature=features))
 
     writer_option = tf.io.TFRecordOptions(compression_type='GZIP')
-    writer = None
-    if not tfrecord_size:
-        tfrecord_size = df.shape[0]
+    writer = tf.io.TFRecordWriter(output_file_name, options=writer_option)
     for idx, line in tqdm(df.iterrows(), total=df.shape[0]):
         ex = _make_example(line, feature_cols, label_col)
-        if idx % tfrecord_size == 0:
-            if writer:
-                writer.close()
-            writer = tf.io.TFRecordWriter(f'{filename_pre}.{idx // tfrecord_size + 1:02d}', options=writer_option)
         writer.write(ex.SerializeToString())
+    writer.close()
     del df
     gc.collect()
 

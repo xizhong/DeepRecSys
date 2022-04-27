@@ -4,21 +4,23 @@
 import logging
 import os
 
-# import sys
-# sys.path.append(os.path.dirname(sys.path[0]))
+os.environ['TF_CPP_MIN_LOG_LEVEL'] = '2'
+
+import sys
+sys.path.append(os.path.dirname(sys.path[0]))
 
 import tensorflow as tf
-from utils import load_config, set_gpu, set_logger, load_callbacks
+from utils import load_config, set_gpu, set_logger, load_callbacks_fn
 from datasets import build_tfrecord_dataset, generate_tfrecord_iter
 from models import LR
+
 
 set_gpu([1])
 
 model = 'lr'
-data = 'criteo_x4'
+data = 'criteo_x4_8'
 exp_name = f'{model}_{data}'
 logger = set_logger(logging.INFO, f'../logs/{exp_name}.log')
-
 
 params = load_config('../config/datasets/Criteo.yaml', '../config/models/LR.yaml')
 
@@ -40,7 +42,7 @@ valid_iter, test_iter = generate_tfrecord_iter([
 
 model = LR(feature_cols, params)
 
-callbacks = load_callbacks(**params['checkpoint'], **params['tensorboard'], **params['early_stopping'])
+callbacks = load_callbacks_fn(model_params['checkpoint'], model_params['tensorboard'], model_params['early_stopping'])
 
 model.fit(train_iter, epochs=params['epochs'],
           verbose=params['verbose'], callbacks=callbacks, validation_data=valid_iter)
