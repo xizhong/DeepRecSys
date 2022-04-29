@@ -1,14 +1,22 @@
-# @Time  : 2022/3/24 20:09
+# @Time  : 2022/3/28 20:54
 # @Author: xizhong
 # @Desc  :
 
+import tensorflow as tf
+from layers import FMLayer
 from models import Model
+from datasets import generate_feature_inputs_dict
 
 
-class FM(Model):
-    def __init__(self, dim=10, **kwargs):
-        super(FM, self).__init__(**kwargs)
-        self.dim = dim
-
-    def call(self, inputs, training=None, mask=None):
-        pass
+def FM(feature_cols, params):
+    inputs_dict = generate_feature_inputs_dict(feature_cols)
+    inputs = list(inputs_dict.values())
+    outputs = FMLayer(feature_cols, params['embed_dim'], params['regularizer'], True)(inputs_dict)
+    model = Model(inputs=inputs, outputs=outputs)
+    optimizer = tf.keras.optimizers.get(params['optimizer'])
+    optimizer.lr = params['learning_rate']
+    model.compile(
+        optimizer=optimizer,
+        loss=params['loss'],
+        metrics=params['metrics'])
+    return model

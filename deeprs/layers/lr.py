@@ -3,31 +3,28 @@
 # @Desc  :
 
 import tensorflow as tf
-from layers import Layer
+from layers import Layer, EmbeddingLayer
 
 
 class LRLayer(Layer):
-    def __init__(self, activation: bool = False, **kwargs):
+    def __init__(self, feature_cols, embed_dim, regularizer='', activation: bool = False,  **kwargs):
         super(LRLayer, self).__init__(**kwargs)
         self.activation = activation
+        self.feature_cols = feature_cols
+        self.embed_dim = embed_dim
+        self.regularizer = regularizer
+        self.embedding_layer = EmbeddingLayer(self.feature_cols, self.embed_dim, self.regularizer)
 
     def build(self, input_shape):
-        self.weight = self.add_weight('weight',
-                                      shape=(input_shape[-1], 1),
-                                      dtype=tf.float32,
-                                      initializer='glorot_uniform',
-                                      trainable=True)
-        self.bias = self.add_weight(
-            'bias',
-            shape=(1,),
-            dtype=tf.float32,
-            initializer='zero',
-            trainable=True
-        )
+        self.bias = self.add_weight('bias', shape=(1,), dtype=tf.float32, initializer='zero', trainable=True)
         super(LRLayer, self).build(input_shape)
 
     def call(self, inputs):
-        output = tf.matmul(inputs, self.weight) + self.bias
+        embed_dict = self.embedding_layer(inputs)
+        output = tf.keras.backend.sum(tf.keras.layers.Flatten()(
+                tf.keras.layers.concatenate(list(embed_dict.values()), axis=1)),
+            axis=1,
+            keepdims=True) + self.bias
         if self.activation:
             output = tf.keras.activations.sigmoid(output)
         return output
@@ -36,5 +33,5 @@ class LRLayer(Layer):
         return self.bias.shape
 
     def get_config(self):
-        config = super(LRLayer, self).get_config()
-        return config.update({'activation': self.activation})
+        config = {'activation': self.activation, 'feature_cols': self.feature_cols, 'embed_dim': self.embed_dim, 'regularizer': self.regularizer}
+        return config.update(super(LRLayer, self).get_config())

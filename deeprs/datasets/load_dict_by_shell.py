@@ -9,14 +9,14 @@ import numpy as np
 def convert_to_bucket(value):
     value = int(value)
     if value > 2:
-        value = int(np.floor(np.log(value) ** 2))
+        value = int(np.floor(np.log2(value)))
     else:
-        value = int(value)
+        value = 1
     return str(value)
 
 
-def load_data_dict(file_less_pth='../config/datasets/criteo_train_less_10.py',
-              file_geq_pth='../config/datasets/criteo_train_dict_geq_10.py'):
+def load_criteo_data_dict(file_less_pth='../datasets/shell/criteo_train_less_2.txt',
+              file_geq_pth='../datasets/shell/criteo_train_dict_geq_2.txt'):
     min_count_dict, uniq_vocab_dict = collections.OrderedDict(), collections.OrderedDict()
     pattern = r'[ \n\[\]\]"]'
     with open(file_less_pth) as f:

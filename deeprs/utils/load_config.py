@@ -8,19 +8,15 @@ import json
 import os
 
 
-def load_config(*config_pth):
+def load_config(config_pth, data_name):
     params = dict()
-    if not config_pth or len(config_pth) < 1:
+    if config_pth is None or not config_pth:
         raise ValueError(
             "Make sure config_pth in [model_file_pth, data_file_pth]")
-    for pth in config_pth:
-        assert os.path.isfile(pth) == 1, f'Invalid config file {pth}'
-        with open(pth, 'r', encoding='utf-8') as f:
-            params.update(yaml.load(f, Loader=yaml.FullLoader))
-    if len(config_pth) > 1:
-        for dd in ['train_data', 'valid_data', 'test_data']:
-            params[dd] = os.path.join(params['data_root'], params['raw_data'], params[dd])
-    return params
+    assert os.path.isfile(config_pth) == 1, f'Invalid config file {config_pth}'
+    with open(config_pth, 'r', encoding='utf-8') as f:
+        params.update(yaml.load(f, Loader=yaml.FullLoader))
+    return params[data_name]
 
 
 def seed_everything(seed):

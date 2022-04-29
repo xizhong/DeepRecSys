@@ -1,32 +1,30 @@
-# @Time  : 2022/4/17 15:46
+# @Time  : 2022/4/29 11:24
 # @Author: xizhong
 # @Desc  :
 
 import os
 os.environ['TF_CPP_MIN_LOG_LEVEL'] = '2'
-
 import sys
 sys.path.append(os.path.dirname(sys.path[0]))
 
 import tensorflow as tf
 from utils import load_config, set_gpu, set_logger, load_callbacks_fn
 from datasets import load_train_features, generate_tfrecord_iter
-from models import LR
+from models import FM
 import logging
 
 # tf.compat.v1.enable_eager_execution()
 
-set_gpu([0])
+model = 'fm'
+data = 'criteo_x4_001'
+# data = 'criteo_x4_002'
+logger = set_logger(logging.INFO, log_file=f'../logs/{model}/{data}/{model}_with_{data}.log')
+model_params = load_config(f'../config/{model}.yaml', f'{model}_{data}')
 
-model = 'lr'
-data = 'criteo_x4'
-exp_name = f'{model}_with_{data}'
-logger = set_logger(logging.INFO, log_file=f'../logs/{exp_name}.log')
-
-model_params = load_config('../config/models/LR.yaml')
+set_gpu(model_params['gpu'])
 
 data_params, _ = load_train_features(
-    '../data/criteo_mp/feature_data/')
+    f'../data/{data}/feature_data/')
 
 train_iter = generate_tfrecord_iter(
     data_params['train_tfr_pth'],
@@ -38,7 +36,8 @@ valid_iter, test_iter = generate_tfrecord_iter([
     data_params['feature_cols'], data_params['label_col'],
     model_params['batch_size'], is_train_data=False)
 
-model = LR(data_params['feature_cols'], model_params)
+
+model = FM(data_params['feature_cols'], model_params)
 
 callbacks = load_callbacks_fn(model_params['checkpoint'], model_params['tensorboard'], model_params['early_stopping'])
 

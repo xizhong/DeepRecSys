@@ -5,7 +5,8 @@ __pycache__/
 
 # C extensions
 *.so
-
+logs/
+*.log
 
 # Distribution / packaging
 .Python
@@ -133,3 +134,4 @@ dmypy.json
 .idea/
 
 .DS_Store
+/deeprs/datasets/logs/

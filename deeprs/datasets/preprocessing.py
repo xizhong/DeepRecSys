@@ -10,9 +10,9 @@ class Preprocessing():
     def convert_to_bucket(self, df, col_name):
         def _convert_to_bucket(value):
             if value > 2:
-                value = int(np.floor(np.log(value) ** 2))
+                value = int(np.floor(np.log2(value)))
             else:
-                value = int(value)
+                value = 1
             return value
         return df[col_name].map(_convert_to_bucket).astype(int)
 

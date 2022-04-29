@@ -83,9 +83,9 @@ def read_tfrecord(filenames, feature_cols, label_col, batch_size=256, num_epochs
         dataset = dataset.prefetch(
             buffer_size=batch_size * prefetch_factor)
     # try:
-    #     iterator = dataset.make_one_shot_iterator()
+    #     iterator = datasets.make_one_shot_iterator()
     # except AttributeError:
-    #     iterator = tf.compat.v1.data.make_one_shot_iterator(dataset)
+    #     iterator = tf.compat.v1.data.make_one_shot_iterator(datasets)
     # return iterator.get_next()
     return dataset
 

@@ -3,6 +3,6 @@
 # @Desc  :
 
 from layers.layer import Layer
+from layers.embedding import EmbeddingLayer
 from layers.lr import LRLayer
 from layers.fm import FMLayer
-from layers.embedding import EmbeddingLayer

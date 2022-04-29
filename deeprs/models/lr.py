@@ -3,7 +3,7 @@
 # @Desc  :
 
 import tensorflow as tf
-from layers import EmbeddingLayer
+from layers import LRLayer
 from models import Model
 from datasets import generate_feature_inputs_dict
 
@@ -11,14 +11,7 @@ from datasets import generate_feature_inputs_dict
 def LR(feature_cols, params):
     inputs_dict = generate_feature_inputs_dict(feature_cols)
     inputs = list(inputs_dict.values())
-    embedding_layer = EmbeddingLayer(feature_cols, params['embed_dim'])
-    embed_dict = embedding_layer(inputs_dict)
-    embed = tf.keras.backend.sum(
-        tf.keras.layers.Flatten()(
-            tf.keras.layers.concatenate(list(embed_dict.values()),axis=1)),
-        axis=1,
-        keepdims=True)
-    outputs = tf.keras.activations.sigmoid(embed)
+    outputs = LRLayer(feature_cols, params['embed_dim'], params['regularizer'], True)(inputs_dict)
     model = Model(inputs=inputs, outputs=outputs)
     optimizer = tf.keras.optimizers.get(params['optimizer'])
     optimizer.lr = params['learning_rate']
