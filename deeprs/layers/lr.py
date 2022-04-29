@@ -30,8 +30,13 @@ class LRLayer(Layer):
         return output
 
     def compute_output_shape(self, input_shape):
-        return self.bias.shape
+        return (1,)
 
     def get_config(self):
-        config = {'activation': self.activation, 'feature_cols': self.feature_cols, 'embed_dim': self.embed_dim, 'regularizer': self.regularizer}
+        config = {'activation': self.activation, 'feature_cols': self.feature_cols, 'embed_dim': self.embed_dim,
+                  'regularizer': self.regularizer}
         return config.update(super(LRLayer, self).get_config())
+
+    @classmethod
+    def from_config(cls, config):
+        return cls(**config)

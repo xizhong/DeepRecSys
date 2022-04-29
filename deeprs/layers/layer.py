@@ -15,3 +15,8 @@ class Layer(tf.keras.layers.Layer):
         elif reg.startswith('l12_'):
             regs = reg.split('_')
             return tf.keras.regularizers.l1_l2(l1=float(regs[1]), l2=float(reg[1]))
+
+    def get_config_dict(self):
+        if super(Layer, self).get_config():
+            return super(Layer, self).get_config()
+        return dict()

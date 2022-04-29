@@ -35,4 +35,8 @@ class FMLayer(Layer):
     def get_config(self):
         config = {'activation': self.activation, 'feature_cols': self.feature_cols, 'embed_dim': self.embed_dim,
                   'regularizer': self.regularizer}
-        return config.update(super(LRLayer, self).get_config())
+        return config.update(super(FMLayer, self).get_config())
+
+    @classmethod
+    def from_config(cls, config):
+        return cls(**config)

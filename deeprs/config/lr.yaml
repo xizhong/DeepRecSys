@@ -5,9 +5,9 @@ lr_criteo_x4_001:
   shuffle_factor: 1000
   early_stopping: {monitor: val_auc, mode: 'max', patience: 10, verbose: 1,
                    min_delta: 0.001, baseline: 0.0, restore_best_weights: False}
-  checkpoint: {filepath: ../logs/LR/criteo_x4_001/checkpoint, monitor: val_auc, verbose: 1, save_best_only: True,
-               save_weights_only: False, mode: 'max', save_freq: epoch}
-  tensorboard: {log_dir: '..logs/LR/criteo_x4_001/logs', histogram_freq: 0, write_graph: True,
+  checkpoint: {filepath: ../logs/lr/criteo_x4_001/checkpoint/, monitor: val_auc, verbose: 1, save_best_only: True,
+               save_weights_only: True, mode: 'max', save_freq: epoch}
+  tensorboard: {log_dir: '..logs/lr/criteo_x4_001/logs/', histogram_freq: 0, write_graph: True,
                  write_grads: False, write_images: False, embeddings_freq: 0, update_freq: 'epoch'}
 
   # model config
@@ -19,7 +19,7 @@ lr_criteo_x4_001:
   learning_rate: 1.0e-3
   regularizer: l2_1.0e-8
   batch_size: 10000
-  epochs: 5
+  epochs: 50
   embed_dim: 1
   seed: 20190601
   monitor: val_auc
@@ -33,9 +33,9 @@ lr_criteo_x4_002:
   shuffle_factor: 1000
   early_stopping: {monitor: val_auc, mode: 'max', patience: 10, verbose: 1,
                    min_delta: 0.001, baseline: 0.0, restore_best_weights: False}
-  checkpoint: {filepath: ../logs/LR/criteo_x4_002/checkpoint, monitor: val_auc, verbose: 1, save_best_only: True,
-               save_weights_only: False, mode: 'max', save_freq: epoch}
-  tensorboard: {log_dir: '..logs/LR/criteo_x4_002/logs', histogram_freq: 0, write_graph: True,
+  checkpoint: {filepath: ../logs/lr/criteo_x4_002/checkpoint/, monitor: val_auc, verbose: 1, save_best_only: True,
+               save_weights_only: True, mode: 'max', save_freq: epoch}
+  tensorboard: {log_dir: '..logs/lr/criteo_x4_002/logs/', histogram_freq: 0, write_graph: True,
                  write_grads: False, write_images: False, embeddings_freq: 0, update_freq: 'epoch'}
 
   # model config
@@ -47,10 +47,36 @@ lr_criteo_x4_002:
   learning_rate: 1.0e-3
   regularizer: l2_1.0e-8
   batch_size: 10000
-  epochs: 5
+  epochs: 50
   embed_dim: 1
   seed: 20190601
   monitor: val_auc
   gpu: [0, 1]
 
 
+# default config
+lr_criteo_tiny:
+  workers: 3 # not use
+  verbose: 1
+  shuffle_factor: 1000
+  early_stopping: {monitor: val_auc, mode: 'max', patience: 10, verbose: 1,
+                   min_delta: 0.001, baseline: 0.0, restore_best_weights: False}
+  checkpoint: {filepath: ../logs/lr/criteo_tiny/checkpoint/, monitor: val_auc, verbose: 1, save_best_only: True,
+               save_weights_only: True, mode: 'max', save_freq: epoch}
+  tensorboard: {log_dir: '../logs/lr/criteo_tiny/logs/', histogram_freq: 0, write_graph: True,
+                 write_grads: False, write_images: False, embeddings_freq: 0, update_freq: 'epoch'}
+
+  # model config
+  model: lr
+  loss: binary_crossentropy
+  metrics: [accuracy, AUC]
+  task: binary_classification
+  optimizer: adam
+  learning_rate: 1.0e-3
+  regularizer: l2_1.0e-8
+  batch_size: 5000
+  epochs: 5
+  embed_dim: 1
+  seed: 20190601
+  monitor: val_auc
+  gpu: [0, 1]

@@ -47,3 +47,25 @@ criteo_x4_002:
   # 对可分类特征顾虑频率低低于2的特征，更新可分类特征
   # 对可分类特征利用StringLookup转成索引
   # 存储到tfr文档，每个文档100万条数据
+
+criteo_tiny:
+  data: criteo_tiny
+  data_root: ../data/criteo_tiny
+  tfr_data: tfr_data
+  output_feature: feature_data
+  tfr_data_size: 10000
+  tfr_processes: 10
+  data_format: csv
+  train_data: ../data/raw_data/criteo_tiny/train.csv
+  test_data: ../data/raw_data/criteo_tiny/test.csv
+  valid_data: ../data/raw_data/criteo_tiny/valid.csv
+  feature_cols:
+    - { name: [ I1,I2,I3,I4,I5,I6,I7,I8,I9,I10,I11,I12,I13 ],
+        dtype: float, type: categorical, preprocess: convert_to_bucket, na_value: 0 }
+    - { name: [ C1,C2,C3,C4,C5,C6,C7,C8,C9,C10,C11,C12,C13,C14,C15,C16,C17,C18,C19,C20,C21,C22,C23,C24,C25,C26 ],
+        dtype: string, type: categorical, na_value: "", min_count: 10 }
+  label_col: { name: Label, dtype: float }
+  file_less_pth: ../datasets/shell/criteo_tiny_train_less_2.txt
+  file_geq_pth: ../datasets/shell/criteo_tiny_train_dict_geq_2.txt
+
+  # 用于模型测试，train 8w，test：1w，valid：1w

@@ -70,19 +70,20 @@ def save_train_features(feature_cols, label_col, file_pth, encoders=None, train_
         pickle.dump(params, f)
 
 
-def load_train_features(file_pth):
+def load_train_features(file_pth, load_encoders=False):
     params, encoders = None, None
     train_features_pth = os.path.join(file_pth, 'train_features.cfg')
     if os.path.exists(train_features_pth):
         with open(train_features_pth, 'rb') as f:
             params = pickle.load(f, encoding='bytes')
     encoders_pth = os.path.join(file_pth, 'encoders.cfg')
-    if os.path.exists(encoders_pth):
-        with open(encoders_pth, 'rb') as f:
-            encoders = pickle.load(f, encoding='bytes')
-        for name, vocab in encoders.items():
-            encoder = Encoder(name, vocab)
-            encoders[name] = encoder
+    if load_encoders:
+        if os.path.exists(encoders_pth):
+            with open(encoders_pth, 'rb') as f:
+                encoders = pickle.load(f, encoding='bytes')
+            for name, vocab in encoders.items():
+                encoder = Encoder(name, vocab)
+                encoders[name] = encoder
     return params, encoders
 
 

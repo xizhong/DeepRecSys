@@ -10,12 +10,13 @@ from utils import load_config, set_logger
 import time
 import logging
 
-data = 'criteo_x4_001'
+# data = 'criteo_x4_001'
 # data = 'criteo_x4_002'
+data = 'criteo_tiny'
 
 logger = set_logger(logging.INFO,
-                    f'../datasets/logs/gen_tfr_{data}_{time.strftime("%Y%m%d%H", time.localtime())}.log')
-params = load_config(f'../datasets/config/{data}.yaml', data_name=data)
+                    f'../data/{data}/gen_tfr_{data}_{time.strftime("%Y%m%d%H", time.localtime())}.log')
+params = load_config(f'../datasets/config/{data.split("_")[0]}.yaml', data_name=data)
 
 feature_cols, label_col = build_tfrecord_dataset(
     params['feature_cols'], params['label_col'], params['data_root'], params['tfr_data'],

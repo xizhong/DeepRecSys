@@ -25,3 +25,4 @@ do
   echo "$col : cost $[ $end - $start ]s"
 done
 echo "$col : total cost $[ $end - $total_start ]s"
+
